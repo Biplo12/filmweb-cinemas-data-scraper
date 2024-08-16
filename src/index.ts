@@ -1,4 +1,4 @@
-import { FILMWEB_CINEMAS_BASE_URL } from "@/constants";
+import { FILMWEB_CINEMAS_BASE_URL } from "./constants";
 import axios from "axios";
 import {
   capitalizeFirstLetter,
@@ -9,10 +9,15 @@ import { JSDOM } from "jsdom";
 
 // Function to fetch movies page data
 const fetchMoviesPage = async (city: string): Promise<string> => {
-  const response = await axios.get(
-    `${FILMWEB_CINEMAS_BASE_URL}/${capitalizeFirstLetter(city)}`
-  );
-  return response.data;
+  try {
+    const response = await axios.get(
+      `${FILMWEB_CINEMAS_BASE_URL}/${capitalizeFirstLetter(city)}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching movies page:", error);
+    throw error;
+  }
 };
 
 // Function to parse HTML string into a Document object

@@ -1,5 +1,9 @@
-/node_modules
+/src/node_modules
 /yarn.lock
 /package-lock.json
+/src/.env
+/src/.env.local
 /.env
 /.env.local
+/node_modules
+/dist
