@@ -25,11 +25,6 @@ export const createMovie = async (movie: Movie) => {
         genres: {
           create: movie.genres.map((genre: string) => ({ name: genre })),
         },
-        production: {
-          create: movie.production.map((country: string) => ({
-            name: country,
-          })),
-        },
       },
     });
 

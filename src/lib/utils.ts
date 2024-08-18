@@ -1,5 +1,6 @@
 import axios from "axios";
 import { JSDOM } from "jsdom";
+import { WEEK_DAYS } from "../constants";
 
 export const fetchPageHtml = async (url: string): Promise<Document> => {
   try {
@@ -55,10 +56,11 @@ export const convertElementsToArray = (
 ): string[] => Array.from(elements).map((el) => el.textContent?.trim() || "");
 
 export const convertDateStringToDateObject = (
-  dateString: string,
-  timeString: string
-): Date => {
+  dateString?: string,
+  timeString?: string
+): Date | undefined => {
+  if (!dateString || !timeString) return undefined;
   const [year, month, day] = dateString.split("-").map(Number);
   const [hours, minutes] = timeString.split(":").map(Number);
-  return new Date(year, month - 1, day, hours, minutes);
+  return new Date(Date.UTC(year, month - 1, day, hours, minutes));
 };

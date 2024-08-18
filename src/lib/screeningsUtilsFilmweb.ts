@@ -21,7 +21,7 @@ const SCREENING_SELECTORS: Selector[] = [
     selector: "div.preview__detail--director h3 a span",
   },
   { key: "movie.description", selector: "div.preview__plotText" },
-  { key: "movie.production", selector: "div.preview__detail--country" },
+  { key: "movie.production", selector: "div.preview__detail--country h3 span" },
   { key: "movie.mainCast", selector: "div.preview__detail--cast h3 a span" },
   { key: "movie.genres", selector: "div.preview__detail--genre a span" },
   { key: "movie.href", selector: "a.preview__link", attribute: "href" },
@@ -51,7 +51,6 @@ const createEmptyScreening = (): Screening => ({
     imagePoster: "",
     director: "",
     description: "",
-    production: [],
     mainCast: [],
     genres: [],
     movieHref: "",
@@ -92,10 +91,6 @@ const populateScreeningData = (card: Element): Screening => {
     card.querySelectorAll("div.preview__detail--cast h3")
   );
 
-  screening.movie.production = convertElementsToArray(
-    card.querySelectorAll("div.preview__detail--country")
-  );
-
   screening.movie.genres = convertElementsToArray(
     card.querySelectorAll("div.preview__genresInHeader h3")
   );
@@ -114,7 +109,7 @@ const populateScreeningData = (card: Element): Screening => {
   return screening;
 };
 
-export const extractScreeningsDataFromDocument = async (
+export const extractScreeningsDataFromDocumentFilmweb = async (
   cinema: Cinema
 ): Promise<Screening[]> => {
   if (!cinema) {
@@ -128,12 +123,22 @@ export const extractScreeningsDataFromDocument = async (
     populateScreeningData(card)
   );
 
-  const formattedScreenings = screenings.map((screening) => ({
+  const filteredScreenings = screenings.filter(
+    (screening) =>
+      screening.screening.date !== "N/A" &&
+      screening.screening.date !== undefined
+  );
+
+  const formattedScreenings = filteredScreenings.map((screening) => ({
     ...screening,
+    movie: {
+      ...screening.movie,
+      year: parseInt(screening.movie.year.toString()),
+    },
     screening: {
       ...screening.screening,
       date: convertDateStringToDateObject(
-        screening.screening.date.toString(),
+        screening.screening.date?.toString(),
         screening.screening.time
       ),
     },

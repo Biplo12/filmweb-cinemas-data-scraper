@@ -4,13 +4,15 @@ import {
   extractTextContentFromSelector,
   fetchPageHtml,
 } from "./utils";
-import { Cinema, Movie, Selector } from "../interfaces";
+import { Cinema, CinemaGroup, Movie, Selector } from "../interfaces";
 import { FILMWEB_BASE_URL } from "../constants";
 
 const MOVIE_CARD_SELECTOR =
   "div.showtimesFilmsItem__filmPreview.previewHolder.isSmall.smMicro.isBold.showGenresInHeader.showDuration.noPadding.noYear.variantPlot.variantAdditionalInfo";
 
-const CINEMA_CARD_SELECTOR = "li.showtimesCinemasList__group";
+const CINEMA_CARD_SELECTOR = "li.showtimesCinemasList__item";
+
+const CINEMA_GROUP_SELECTOR = "li.showtimesCinemasList__group";
 
 const MOVIE_SELECTORS: Selector[] = [
   { key: "title", selector: "a.preview__link" },
@@ -23,26 +25,26 @@ const MOVIE_SELECTORS: Selector[] = [
   { key: "screeningsHref", selector: "a.preview__link", attribute: "href" },
 ];
 
-const CINEMA_SELECTORS: Selector[] = [
-  { key: "name", selector: "h3.showtimesCinemasList__itemHeader" },
-  {
-    key: "city",
-    selector: "h3.showtimesCinemasList__groupHeader",
-  },
-  {
-    key: "screeningsHref",
-    selector: "a.showtimesCinemasList__link",
-    attribute: "href",
-  },
+const CINEMA_GROUP_SELECTORS: Selector[] = [
+  { key: "city", selector: "h3.showtimesCinemasList__groupHeader" },
   {
     key: "latitude",
     selector: "li.showtimesCinemasList__item",
-    attribute: "data-cinema-longitude",
+    attribute: "data-cinema-latitude",
   },
   {
     key: "longitude",
     selector: "li.showtimesCinemasList__item",
     attribute: "data-cinema-longitude",
+  },
+];
+
+const CINEMA_SELECTORS: Selector[] = [
+  { key: "name", selector: "h3.showtimesCinemasList__itemHeader" },
+  {
+    key: "screeningsHref",
+    selector: "a.showtimesCinemasList__link",
+    attribute: "href",
   },
 ];
 
@@ -56,7 +58,6 @@ const createEmptyMovie = (): Movie => ({
   movieHref: "",
   description: "",
   screeningsHref: "",
-  production: [],
   mainCast: [],
   genres: [],
 });
@@ -65,6 +66,13 @@ const createEmptyCinema = (): Cinema => ({
   name: "",
   city: "",
   screeningsHref: "",
+  latitude: 0,
+  longitude: 0,
+});
+
+const createEmptyCinemaGroup = (): CinemaGroup => ({
+  cinemas: [],
+  city: "",
   latitude: 0,
   longitude: 0,
 });
@@ -92,10 +100,6 @@ const populateMovieData = (card: Element, city: string): Movie => {
     card.querySelectorAll("div.preview__genresInHeader h3")
   );
 
-  movie.production = convertElementsToArray(
-    card.querySelectorAll("div.preview__detail--country")
-  );
-
   if (movie.duration) {
     movie.durationInMinutes = durationStringToNumber(movie.duration.toString());
   }
@@ -120,21 +124,48 @@ const populateCinemaData = (card: Element): Cinema => {
   return cinema;
 };
 
-export const extractMovieDataFromDocument = async (
+const populateCinemaGroupData = (card: Element): CinemaGroup => {
+  const cinemaGroup = createEmptyCinemaGroup();
+
+  CINEMA_GROUP_SELECTORS.forEach(({ key, selector, attribute }) => {
+    const value = extractTextContentFromSelector(selector, card, attribute);
+    if (key in cinemaGroup) {
+      (cinemaGroup as any)[key] = value;
+    }
+  });
+
+  cinemaGroup.cinemas = Array.from(
+    card.querySelectorAll(CINEMA_CARD_SELECTOR)
+  ).map((card) => populateCinemaData(card));
+
+  cinemaGroup.cinemas.forEach((cinema) => {
+    cinema.city = cinemaGroup.city;
+    cinema.latitude = parseFloat(cinemaGroup.latitude.toString());
+    cinema.longitude = parseFloat(cinemaGroup.longitude.toString());
+  });
+
+  console.log(cinemaGroup);
+
+  return cinemaGroup;
+};
+
+export const extractMoviesAndCinemasDataFromDocumentFilmweb = async (
   city: string
 ): Promise<{ movies: Movie[]; cinemas: Cinema[] }> => {
   const document = await fetchPageHtml(`${FILMWEB_BASE_URL}/showtimes/${city}`);
 
   const movieCards = document.querySelectorAll(MOVIE_CARD_SELECTOR);
-  const cinemasCards = document.querySelectorAll(CINEMA_CARD_SELECTOR);
+  const cinemaGroupCards = document.querySelectorAll(CINEMA_GROUP_SELECTOR);
 
   const movies = Array.from(movieCards).map((card) =>
     populateMovieData(card, city)
   );
 
-  const cinemas = Array.from(cinemasCards).map((card) =>
-    populateCinemaData(card)
+  const cinemasGroups = Array.from(cinemaGroupCards).map((card) =>
+    populateCinemaGroupData(card)
   );
+
+  const cinemas = cinemasGroups.flatMap((group) => group.cinemas);
 
   const formattedCinemas = cinemas.map((cinema) => ({
     ...cinema,

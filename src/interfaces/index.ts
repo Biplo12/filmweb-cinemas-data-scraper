@@ -20,7 +20,6 @@ export interface Movie {
   imagePoster: string;
   director: string;
   description: string;
-  production: string[];
   mainCast: string[];
   genres: string[];
   movieHref: string;
@@ -28,7 +27,7 @@ export interface Movie {
 }
 
 export interface ScreeningDetails {
-  date: Date;
+  date?: Date | string;
   time: string;
   bookingHref: string;
 }
@@ -45,4 +44,11 @@ export interface Screening {
   movie: Movie;
   screening: ScreeningDetails;
   cinema: Cinema;
+}
+
+export interface CinemaGroup {
+  cinemas: Cinema[];
+  city: string;
+  latitude: number;
+  longitude: number;
 }

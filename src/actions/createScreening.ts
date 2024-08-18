@@ -6,21 +6,24 @@ import { Movie, Cinema } from "@prisma/client";
 
 export const createScreening = async (screening: Screening) => {
   try {
+    if (!screening.cinema.name || !screening.cinema.city) {
+      console.log("Cinema data is missing");
+      return;
+    }
+
     const isScreeningExist = await prisma.screening.findFirst({
       where: {
-        date: screening.screening.date,
+        date: screening.screening.date || "N/A",
         time: screening.screening.time,
         bookingHref: screening.screening.bookingHref,
         cinema: {
-          name: screening.cinema.name,
-          city: screening.cinema.city,
-          latitude: screening.cinema.latitude,
-          longitude: screening.cinema.longitude,
+          is: {
+            name: screening.cinema.name,
+            city: screening.cinema.city,
+            latitude: screening.cinema.latitude,
+            longitude: screening.cinema.longitude,
+          },
         },
-      },
-      include: {
-        movie: true,
-        cinema: true,
       },
     });
 
@@ -58,7 +61,6 @@ export const createScreening = async (screening: Screening) => {
         director: screening.movie.director,
         movieHref: screening.movie.movieHref,
         description: screening.movie.description,
-        production: screening.movie.production,
         mainCast: screening.movie.mainCast,
         genres: screening.movie.genres,
       })) as Movie;
@@ -76,7 +78,7 @@ export const createScreening = async (screening: Screening) => {
 
     await prisma.screening.create({
       data: {
-        date: screening.screening.date,
+        date: screening.screening.date || "N/A",
         time: screening.screening.time,
         bookingHref: screening.screening.bookingHref,
         cinema: {
