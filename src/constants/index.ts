@@ -1,1 +1,1 @@
-export const FILMWEB_CINEMAS_BASE_URL = "https://www.filmweb.pl/showtimes";
+export const FILMWEB_BASE_URL = "https://www.filmweb.pl";

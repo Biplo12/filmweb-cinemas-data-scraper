@@ -6,6 +6,7 @@
   "devDependencies": {
     "@types/jsdom": "^21.1.7",
     "nodemon": "^3.1.4",
+    "prisma": "^5.18.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.4"
   },
@@ -15,7 +16,9 @@
     "start:watch": "nodemon --exec ts-node -r ./src/index.ts"
   },
   "dependencies": {
+    "@prisma/client": "^5.18.0",
     "axios": "^1.7.4",
+    "dotenv": "^16.4.5",
     "jsdom": "^24.1.1"
   }
 }
