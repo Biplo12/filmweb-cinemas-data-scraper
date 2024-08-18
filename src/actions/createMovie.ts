@@ -1,7 +1,7 @@
 import { prisma } from "../prisma/prisma";
-import { MovieWithCastAndGenres } from "../interfaces";
+import { Movie } from "../interfaces";
 
-export const createMovie = async (movie: MovieWithCastAndGenres) => {
+export const createMovie = async (movie: Movie) => {
   try {
     const isMovieExist = await prisma.movie.findFirst({
       where: {
@@ -12,23 +12,29 @@ export const createMovie = async (movie: MovieWithCastAndGenres) => {
 
     if (isMovieExist) {
       console.log(`Movie ${movie.title} already exists`);
-      return;
+      return isMovieExist;
     }
 
-    await prisma.movie.create({
+    const createdMovie = await prisma.movie.create({
       data: {
         ...movie,
         screeningsHref: movie.screeningsHref || "N/A",
         mainCast: {
-          create: movie.mainCast.map((cast) => ({ name: cast })),
+          create: movie.mainCast.map((cast: string) => ({ name: cast })),
         },
         genres: {
-          create: movie.genres.map((genre) => ({ name: genre })),
+          create: movie.genres.map((genre: string) => ({ name: genre })),
+        },
+        production: {
+          create: movie.production.map((country: string) => ({
+            name: country,
+          })),
         },
       },
     });
 
     console.log(`Movie ${movie.title} created successfully`);
+    return createdMovie;
   } catch (err) {
     console.log(err);
   }

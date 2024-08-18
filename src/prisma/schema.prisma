@@ -27,6 +27,13 @@ model Genre {
   movie     Movie    @relation(fields: [movieId], references: [id])
 }
 
+model Production {
+  id        String   @id @default(uuid())
+  name      String
+  movieId   String
+  movie     Movie    @relation(fields: [movieId], references: [id])
+}
+
 model Movie {
   id        String   @id @default(uuid())
   title     String
@@ -36,13 +43,13 @@ model Movie {
   imagePoster String
   director  String
   description String
-  production String
   screeningsHref String?
   movieHref String
   
   screenings Screening[]
   mainCast  MainCast[]
   genres    Genre[]
+  production Production[]
 }
 
 model Screening {
@@ -53,7 +60,7 @@ model Screening {
   cinema    Cinema    @relation(fields: [cinemaId], references: [id])
   date      DateTime
   time      String
-  href      String
+  bookingHref      String
 }
 
 model Cinema {

@@ -1,18 +1,3 @@
-export interface MovieWithCastAndGenres {
-  title: string;
-  year: number;
-  duration: number;
-  durationInMinutes: number;
-  imagePoster: string;
-  director: string;
-  movieHref: string;
-  description: string;
-  production: string;
-  mainCast: string[];
-  genres: string[];
-  screeningsHref?: string;
-}
-
 export interface Selector {
   key: string;
   selector: string;
@@ -27,14 +12,37 @@ export interface Cinema {
   longitude: number;
 }
 
-export interface Screening {
-  date: string;
-  time: string;
-  href: string;
-}
-
-export interface ScreeningMovie {
+export interface Movie {
   title: string;
   year: number;
+  duration: number;
+  durationInMinutes: number;
+  imagePoster: string;
   director: string;
+  description: string;
+  production: string[];
+  mainCast: string[];
+  genres: string[];
+  movieHref: string;
+  screeningsHref?: string;
+}
+
+export interface ScreeningDetails {
+  date: Date;
+  time: string;
+  bookingHref: string;
+}
+
+export interface Cinema {
+  name: string;
+  city: string;
+  screeningsHref: string;
+  latitude: number;
+  longitude: number;
+}
+
+export interface Screening {
+  movie: Movie;
+  screening: ScreeningDetails;
+  cinema: Cinema;
 }

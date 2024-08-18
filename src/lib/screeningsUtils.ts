@@ -1,58 +1,151 @@
 import { FILMWEB_BASE_URL } from "../constants";
-import { Cinema, Screening, ScreeningMovie, Selector } from "../interfaces";
-import { extractTextContentFromSelector, fetchPageHtml } from "./utils";
+import { Cinema, Screening, Selector } from "../interfaces";
+import {
+  convertDateStringToDateObject,
+  convertElementsToArray,
+  durationStringToNumber,
+  extractTextContentFromSelector,
+  fetchPageHtml,
+} from "./utils";
 
 const MOVIE_CARD_SELECTOR =
-  "div.showtimesFilmsItem__filmPreview.previewHolder.isSmall.smMicro.isBold.showGenresInHeader.showDuration.noPadding.noYear.variantPlot.variantAdditionalInfo";
-
-const MOVIE_SELECTORS: Selector[] = [
-  { key: "title", selector: "a.preview__link" },
-  { key: "year", selector: "div.preview__year" },
-  { key: "director", selector: "div.preview__detail--director h3 a span" },
-];
+  "div.showtimesFilmsListSection__film.ShowtimesFilmsItem.showtimesFilmsItem";
 
 const SCREENING_SELECTORS: Selector[] = [
-  { key: "date", selector: "div.preview__date" },
-  { key: "time", selector: "div.preview__time" },
-  { key: "href", selector: "a.preview__link" },
+  { key: "movie.title", selector: "a.preview__link" },
+  { key: "movie.year", selector: "div.preview__year" },
+  { key: "movie.duration", selector: "div.preview__duration" },
+  { key: "movie.imagePoster", selector: "img.poster__image", attribute: "src" },
+  {
+    key: "movie.director",
+    selector: "div.preview__detail--director h3 a span",
+  },
+  { key: "movie.description", selector: "div.preview__plotText" },
+  { key: "movie.production", selector: "div.preview__detail--country" },
+  { key: "movie.mainCast", selector: "div.preview__detail--cast h3 a span" },
+  { key: "movie.genres", selector: "div.preview__detail--genre a span" },
+  { key: "movie.href", selector: "a.preview__link", attribute: "href" },
+  {
+    key: "screening.date",
+    selector: "div.seanceTile.SeanceTile",
+    attribute: "data-date",
+  },
+  {
+    key: "screening.time",
+    selector: "div.seanceTile.SeanceTile",
+    attribute: "data-value",
+  },
+  {
+    key: "screening.bookingHref",
+    selector: "a.seanceTile__link",
+    attribute: "href",
+  },
 ];
 
-const createEmptyMovie = (): ScreeningMovie => ({
-  title: "",
-  year: 0,
-  director: "",
-});
-
 const createEmptyScreening = (): Screening => ({
-  date: "",
-  time: "",
-  href: "",
+  movie: {
+    title: "",
+    year: 0,
+    duration: 0,
+    durationInMinutes: 0,
+    imagePoster: "",
+    director: "",
+    description: "",
+    production: [],
+    mainCast: [],
+    genres: [],
+    movieHref: "",
+  },
+  screening: {
+    date: new Date(),
+    time: "",
+    bookingHref: "",
+  },
+  cinema: {
+    name: "",
+    city: "",
+    latitude: 0,
+    longitude: 0,
+    screeningsHref: "",
+  },
 });
 
-const populateMovieData = (card: Element): Screening => {
+const populateScreeningData = (card: Element): Screening => {
   const screening = createEmptyScreening();
 
-  MOVIE_SELECTORS.forEach(({ key, selector, attribute }) => {
+  SCREENING_SELECTORS.forEach(({ key, selector, attribute }) => {
     const value = extractTextContentFromSelector(selector, card, attribute);
-    if (key in screening) {
-      (screening as any)[key] = value;
+    const keys = key.split(".");
+    if (keys.length === 2 && keys[0] in screening) {
+      (screening as any)[keys[0]][keys[1]] = value;
     }
   });
+
+  if (
+    !screening.screening.bookingHref.includes(FILMWEB_BASE_URL) &&
+    screening.screening.bookingHref !== "N/A"
+  ) {
+    screening.screening.bookingHref = `${FILMWEB_BASE_URL}${screening.screening.bookingHref}`;
+  }
+
+  screening.movie.mainCast = convertElementsToArray(
+    card.querySelectorAll("div.preview__detail--cast h3")
+  );
+
+  screening.movie.production = convertElementsToArray(
+    card.querySelectorAll("div.preview__detail--country")
+  );
+
+  screening.movie.genres = convertElementsToArray(
+    card.querySelectorAll("div.preview__genresInHeader h3")
+  );
+
+  if (screening.movie.movieHref !== "N/A") {
+    const splittedHref = screening.movie.movieHref.split("/showtimes")[0];
+    screening.movie.movieHref = `${FILMWEB_BASE_URL}${splittedHref}`;
+  }
+
+  if (screening.movie.duration) {
+    screening.movie.durationInMinutes = durationStringToNumber(
+      screening.movie.duration.toString()
+    );
+  }
 
   return screening;
 };
 
 export const extractScreeningsDataFromDocument = async (
-  screeningsHref: string | undefined
-): Promise<void> => {
-  if (!screeningsHref) {
-    throw new Error("Screenings href is undefined");
+  cinema: Cinema
+): Promise<Screening[]> => {
+  if (!cinema) {
+    throw new Error("Cinema is undefined");
   }
 
-  const document = await fetchPageHtml(screeningsHref);
+  const document = await fetchPageHtml(cinema.screeningsHref);
   const moviesCards = document.querySelectorAll(MOVIE_CARD_SELECTOR);
 
-  const movies = Array.from(moviesCards).map((card) => populateMovieData(card));
+  const screenings = Array.from(moviesCards).map((card) =>
+    populateScreeningData(card)
+  );
 
-  console.log(movies);
+  const formattedScreenings = screenings.map((screening) => ({
+    ...screening,
+    screening: {
+      ...screening.screening,
+      date: convertDateStringToDateObject(
+        screening.screening.date.toString(),
+        screening.screening.time
+      ),
+    },
+    cinema: {
+      ...screening.cinema,
+      name: cinema.name,
+      city: cinema.city,
+      latitude: cinema.latitude,
+      longitude: cinema.longitude,
+      screeningsHref: cinema.screeningsHref,
+    },
+  }));
+
+  return formattedScreenings;
 };

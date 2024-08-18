@@ -4,7 +4,7 @@ import {
   extractTextContentFromSelector,
   fetchPageHtml,
 } from "./utils";
-import { Cinema, MovieWithCastAndGenres, Selector } from "../interfaces";
+import { Cinema, Movie, Selector } from "../interfaces";
 import { FILMWEB_BASE_URL } from "../constants";
 
 const MOVIE_CARD_SELECTOR =
@@ -46,7 +46,7 @@ const CINEMA_SELECTORS: Selector[] = [
   },
 ];
 
-const createEmptyMovie = (): MovieWithCastAndGenres => ({
+const createEmptyMovie = (): Movie => ({
   title: "",
   year: 0,
   duration: 0,
@@ -55,8 +55,8 @@ const createEmptyMovie = (): MovieWithCastAndGenres => ({
   director: "",
   movieHref: "",
   description: "",
-  production: "",
   screeningsHref: "",
+  production: [],
   mainCast: [],
   genres: [],
 });
@@ -69,10 +69,7 @@ const createEmptyCinema = (): Cinema => ({
   longitude: 0,
 });
 
-const populateMovieData = (
-  card: Element,
-  city: string
-): MovieWithCastAndGenres => {
+const populateMovieData = (card: Element, city: string): Movie => {
   const movie = createEmptyMovie();
 
   MOVIE_SELECTORS.forEach(({ key, selector, attribute }) => {
@@ -93,6 +90,10 @@ const populateMovieData = (
 
   movie.genres = convertElementsToArray(
     card.querySelectorAll("div.preview__genresInHeader h3")
+  );
+
+  movie.production = convertElementsToArray(
+    card.querySelectorAll("div.preview__detail--country")
   );
 
   if (movie.duration) {
@@ -121,7 +122,7 @@ const populateCinemaData = (card: Element): Cinema => {
 
 export const extractMovieDataFromDocument = async (
   city: string
-): Promise<{ movies: MovieWithCastAndGenres[]; cinemas: Cinema[] }> => {
+): Promise<{ movies: Movie[]; cinemas: Cinema[] }> => {
   const document = await fetchPageHtml(`${FILMWEB_BASE_URL}/showtimes/${city}`);
 
   const movieCards = document.querySelectorAll(MOVIE_CARD_SELECTOR);
@@ -146,7 +147,7 @@ export const extractMovieDataFromDocument = async (
     year: parseInt(movie.year.toString()),
     duration: parseInt(movie.duration.toString()),
     durationInMinutes: parseInt(movie.durationInMinutes.toString()),
-  })) as MovieWithCastAndGenres[];
+  })) as Movie[];
 
   return { movies: formattedMovies, cinemas: formattedCinemas };
 };

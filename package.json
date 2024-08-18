@@ -13,7 +13,9 @@
   "scripts": {
     "build": "tsc",
     "start": "ts-node -r ./src/index.ts",
-    "start:watch": "nodemon --exec ts-node -r ./src/index.ts"
+    "start:watch": "nodemon --exec ts-node -r ./src/index.ts",
+    "prisma-reset": "prisma migrate reset --schema=./src/prisma/schema.prisma",
+    "prisma-push": "prisma db push --schema=./src/prisma/schema.prisma && prisma generate --schema=./src/prisma/schema.prisma"
   },
   "dependencies": {
     "@prisma/client": "^5.18.0",

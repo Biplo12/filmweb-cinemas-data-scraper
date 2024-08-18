@@ -18,11 +18,13 @@ export const createCinema = async (cinema: Cinema) => {
       return;
     }
 
-    await prisma.cinema.create({
+    const createdCinema = await prisma.cinema.create({
       data: cinema,
     });
 
     console.log(`Cinema ${cinema.name} created successfully`);
+
+    return createdCinema;
   } catch (err) {
     console.log(err);
   }
