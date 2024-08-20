@@ -50,7 +50,7 @@ const CINEMA_SELECTORS: Selector[] = [
 const createEmptyMovie = (): Movie => ({
   title: "",
   year: 0,
-  duration: 0,
+  duration: "",
   durationInMinutes: 0,
   imagePoster: "",
   director: "",
@@ -173,7 +173,7 @@ export const extractMoviesAndCinemasDataFromDocumentFilmweb = async (
   const formattedMovies = movies.map((movie) => ({
     ...movie,
     year: parseInt(movie.year.toString()),
-    duration: parseInt(movie.duration.toString()),
+    duration: movie.duration,
     durationInMinutes: parseInt(movie.durationInMinutes.toString()),
   })) as Movie[];
 

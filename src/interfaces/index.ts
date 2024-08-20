@@ -15,7 +15,7 @@ export interface Cinema {
 export interface Movie {
   title: string;
   year: number;
-  duration: number;
+  duration: string;
   durationInMinutes: number;
   imagePoster: string;
   director: string;

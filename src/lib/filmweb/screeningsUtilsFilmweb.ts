@@ -46,7 +46,7 @@ const createEmptyScreening = (): Screening => ({
   movie: {
     title: "",
     year: 0,
-    duration: 0,
+    duration: "",
     durationInMinutes: 0,
     imagePoster: "",
     director: "",

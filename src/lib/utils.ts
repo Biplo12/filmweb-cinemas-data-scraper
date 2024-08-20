@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer";
 import { JSDOM } from "jsdom";
+import { IS_PRODUCTION } from "../constants/env";
 // import axios from "axios";
 
 export const fetchPageHtml = async (
@@ -7,7 +8,21 @@ export const fetchPageHtml = async (
   waitForSelector?: string
 ): Promise<Document> => {
   try {
-    const browser = await puppeteer.launch();
+    const puppeteerProdSettings = {
+      headless: true,
+      args: ["--no-sandbox"],
+      executablePath: "/usr/bin/chromium-browser",
+    };
+
+    const puppeteerDevSettings = {
+      headless: true,
+      args: ["--no-sandbox"],
+    };
+
+    const browser = await puppeteer.launch(
+      IS_PRODUCTION ? puppeteerProdSettings : puppeteerDevSettings
+    );
+
     const page = await browser.newPage();
 
     // Navigate to the page
@@ -62,6 +77,13 @@ export const durationStringToNumber = (duration: string): number => {
   });
 
   return totalMinutes;
+};
+
+export const durationNumberToDurationString = (duration: number): string => {
+  const hours = Math.floor(duration / 60);
+  const minutes = duration % 60;
+
+  return `${hours}h ${minutes}m`;
 };
 
 export const extractTextContentFromSelector = (
