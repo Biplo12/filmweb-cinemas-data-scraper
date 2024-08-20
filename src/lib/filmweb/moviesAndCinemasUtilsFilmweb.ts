@@ -3,9 +3,9 @@ import {
   durationStringToNumber,
   extractTextContentFromSelector,
   fetchPageHtml,
-} from "./utils";
-import { Cinema, CinemaGroup, Movie, Selector } from "../interfaces";
-import { FILMWEB_BASE_URL } from "../constants";
+} from "../utils";
+import { Cinema, CinemaGroup, Movie, Selector } from "../../interfaces";
+import { FILMWEB_BASE_URL } from "../../constants";
 
 const MOVIE_CARD_SELECTOR =
   "div.showtimesFilmsItem__filmPreview.previewHolder.isSmall.smMicro.isBold.showGenresInHeader.showDuration.noPadding.noYear.variantPlot.variantAdditionalInfo";
@@ -21,7 +21,6 @@ const MOVIE_SELECTORS: Selector[] = [
   { key: "imagePoster", selector: "img.poster__image", attribute: "src" },
   { key: "director", selector: "div.preview__detail--director h3 a span" },
   { key: "description", selector: "div.preview__plotText" },
-  { key: "production", selector: "div.preview__detail--country" },
   { key: "screeningsHref", selector: "a.preview__link", attribute: "href" },
 ];
 
@@ -143,8 +142,6 @@ const populateCinemaGroupData = (card: Element): CinemaGroup => {
     cinema.latitude = parseFloat(cinemaGroup.latitude.toString());
     cinema.longitude = parseFloat(cinemaGroup.longitude.toString());
   });
-
-  console.log(cinemaGroup);
 
   return cinemaGroup;
 };

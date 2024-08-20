@@ -1,3 +1,3 @@
 export const FILMWEB_BASE_URL = "https://www.filmweb.pl";
-
-export const WEEK_DAYS = ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Niedz"];
+export const SWIATOWID_BASE_URL = "https://swiatowid-katowice.bilety24.pl";
+export const MULTIKINO_BASE_URL = "https://www.multikino.pl";

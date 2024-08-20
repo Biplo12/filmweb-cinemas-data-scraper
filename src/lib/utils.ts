@@ -1,16 +1,48 @@
-import axios from "axios";
+import puppeteer from "puppeteer";
 import { JSDOM } from "jsdom";
-import { WEEK_DAYS } from "../constants";
+// import axios from "axios";
 
-export const fetchPageHtml = async (url: string): Promise<Document> => {
+export const fetchPageHtml = async (
+  url: string,
+  waitForSelector?: string
+): Promise<Document> => {
   try {
-    const response = await axios.get(url);
-    return convertHtmlToDocument(response.data);
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    // Navigate to the page
+    await page.goto(url, { waitUntil: "networkidle2" });
+
+    // Wait for a specific element to load (you can adjust the selector)
+    if (waitForSelector) {
+      await page.waitForSelector(waitForSelector);
+    }
+
+    // Extract the page's content
+    const pageContent = await page.content();
+
+    await browser.close();
+    const document = convertHtmlToDocument(pageContent);
+
+    return document;
   } catch (error) {
     console.error("Error fetching movies page:", error);
     throw error;
   }
 };
+
+// export const fetchPageHtml = async (
+//   url: string,
+//   waitForSelector?: string
+// ): Promise<Document> => {
+//   try {
+//     const response = await axios.get(url);
+//     return convertHtmlToDocument(response.data);
+//   } catch (error) {
+//     console.error("Error fetching movies page:", error);
+//     throw error;
+//   }
+// };
 
 export const capitalizeFirstLetter = (str: string) => {
   if (!str) return "";
@@ -38,7 +70,6 @@ export const extractTextContentFromSelector = (
   attribute?: string
 ): string => {
   const selectedElement = element.querySelector(selector);
-
   if (!selectedElement) return "N/A";
 
   if (attribute) {
@@ -48,8 +79,10 @@ export const extractTextContentFromSelector = (
   return selectedElement.textContent?.trim() || "N/A";
 };
 
-export const convertHtmlToDocument = (html: string): Document =>
-  new JSDOM(html).window.document;
+export const convertHtmlToDocument = (html: string): Document => {
+  const dom = new JSDOM(html);
+  return dom.window.document;
+};
 
 export const convertElementsToArray = (
   elements: NodeListOf<Element>

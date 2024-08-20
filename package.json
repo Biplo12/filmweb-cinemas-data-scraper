@@ -21,6 +21,7 @@
     "@prisma/client": "^5.18.0",
     "axios": "^1.7.4",
     "dotenv": "^16.4.5",
-    "jsdom": "^24.1.1"
+    "jsdom": "^24.1.1",
+    "puppeteer": "^23.1.0"
   }
 }

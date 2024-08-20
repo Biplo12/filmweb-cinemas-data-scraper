@@ -1,12 +1,12 @@
-import { FILMWEB_BASE_URL } from "../constants";
-import { Cinema, Screening, Selector } from "../interfaces";
+import { FILMWEB_BASE_URL } from "../../constants";
+import { Cinema, Screening, Selector } from "../../interfaces";
 import {
   convertDateStringToDateObject,
   convertElementsToArray,
   durationStringToNumber,
   extractTextContentFromSelector,
   fetchPageHtml,
-} from "./utils";
+} from "../utils";
 
 const MOVIE_CARD_SELECTOR =
   "div.showtimesFilmsListSection__film.ShowtimesFilmsItem.showtimesFilmsItem";

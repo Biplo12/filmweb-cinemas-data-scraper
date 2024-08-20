@@ -28,9 +28,6 @@ export const createScreening = async (screening: Screening) => {
     });
 
     if (isScreeningExist) {
-      console.log(
-        `Screening for ${screening.screening.date} at ${screening.screening.time} in ${screening.cinema.name} already exists`
-      );
       return;
     }
 
@@ -93,10 +90,6 @@ export const createScreening = async (screening: Screening) => {
         },
       },
     });
-
-    console.log(
-      `Screening for ${screening.screening.date} at ${screening.screening.time} in ${screening.cinema.name} created successfully`
-    );
   } catch (err) {
     console.log(err);
   }

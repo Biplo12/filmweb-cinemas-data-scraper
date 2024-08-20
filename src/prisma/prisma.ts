@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 export const prisma = new PrismaClient();
 
-export const connectDatabase = async () => {
+const connectDatabase = async () => {
   try {
     await prisma.$connect();
     console.log("Database connected successfully");
@@ -11,3 +11,5 @@ export const connectDatabase = async () => {
     process.exit(1);
   }
 };
+
+export default connectDatabase;

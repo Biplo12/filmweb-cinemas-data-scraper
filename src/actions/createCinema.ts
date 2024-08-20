@@ -14,15 +14,12 @@ export const createCinema = async (cinema: Cinema) => {
     });
 
     if (isCinemaExist) {
-      console.log(`Cinema ${cinema.name} already exists`);
       return;
     }
 
     const createdCinema = await prisma.cinema.create({
       data: cinema,
     });
-
-    console.log(`Cinema ${cinema.name} created successfully`);
 
     return createdCinema;
   } catch (err) {

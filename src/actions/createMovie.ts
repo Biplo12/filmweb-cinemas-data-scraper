@@ -11,7 +11,6 @@ export const createMovie = async (movie: Movie) => {
     });
 
     if (isMovieExist) {
-      console.log(`Movie ${movie.title} already exists`);
       return isMovieExist;
     }
 
@@ -28,7 +27,6 @@ export const createMovie = async (movie: Movie) => {
       },
     });
 
-    console.log(`Movie ${movie.title} created successfully`);
     return createdMovie;
   } catch (err) {
     console.log(err);
