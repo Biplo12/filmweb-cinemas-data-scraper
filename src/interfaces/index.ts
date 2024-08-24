@@ -2,6 +2,7 @@ export interface Selector {
   key: string;
   selector: string;
   attribute?: string;
+  attributeToFind?: string;
 }
 
 export interface Cinema {

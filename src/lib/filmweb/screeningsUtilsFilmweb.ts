@@ -3,6 +3,7 @@ import { Cinema, Screening, Selector } from "../../interfaces";
 import {
   convertDateStringToDateObject,
   convertElementsToArray,
+  createEmptyScreening,
   durationStringToNumber,
   extractTextContentFromSelector,
   fetchPageHtml,
@@ -41,33 +42,6 @@ const SCREENING_SELECTORS: Selector[] = [
     attribute: "href",
   },
 ];
-
-const createEmptyScreening = (): Screening => ({
-  movie: {
-    title: "",
-    year: 0,
-    duration: "",
-    durationInMinutes: 0,
-    imagePoster: "",
-    director: "",
-    description: "",
-    mainCast: [],
-    genres: [],
-    movieHref: "",
-  },
-  screening: {
-    date: new Date(),
-    time: "",
-    bookingHref: "",
-  },
-  cinema: {
-    name: "",
-    city: "",
-    latitude: 0,
-    longitude: 0,
-    screeningsHref: "",
-  },
-});
 
 const populateScreeningData = (card: Element): Screening => {
   const screening = createEmptyScreening();

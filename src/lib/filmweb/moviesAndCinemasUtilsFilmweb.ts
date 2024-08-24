@@ -1,5 +1,8 @@
 import {
   convertElementsToArray,
+  createEmptyCinema,
+  createEmptyCinemaGroup,
+  createEmptyMovie,
   durationStringToNumber,
   extractTextContentFromSelector,
   fetchPageHtml,
@@ -46,35 +49,6 @@ const CINEMA_SELECTORS: Selector[] = [
     attribute: "href",
   },
 ];
-
-const createEmptyMovie = (): Movie => ({
-  title: "",
-  year: 0,
-  duration: "",
-  durationInMinutes: 0,
-  imagePoster: "",
-  director: "",
-  movieHref: "",
-  description: "",
-  screeningsHref: "",
-  mainCast: [],
-  genres: [],
-});
-
-const createEmptyCinema = (): Cinema => ({
-  name: "",
-  city: "",
-  screeningsHref: "",
-  latitude: 0,
-  longitude: 0,
-});
-
-const createEmptyCinemaGroup = (): CinemaGroup => ({
-  cinemas: [],
-  city: "",
-  latitude: 0,
-  longitude: 0,
-});
 
 const populateMovieData = (card: Element, city: string): Movie => {
   const movie = createEmptyMovie();

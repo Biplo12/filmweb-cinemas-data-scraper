@@ -51,7 +51,6 @@ model Screening {
   cinemaId  String
   cinema    Cinema    @relation(fields: [cinemaId], references: [id])
   date      DateTime 
-  time      String
   bookingHref      String
 }
 

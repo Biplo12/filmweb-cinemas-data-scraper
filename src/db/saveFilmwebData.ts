@@ -7,8 +7,8 @@ import saveMultikinoData from "./saveMultikinoData";
 
 const saveFilmwebData = async (city: string) => {
   try {
-    // const { movies: filmwebMovies, cinemas: filmwebCinemas } =
-    //   await extractMoviesAndCinemasDataFromDocumentFilmweb(city);
+    const { movies: filmwebMovies, cinemas: filmwebCinemas } =
+      await extractMoviesAndCinemasDataFromDocumentFilmweb(city);
 
     // for (const movie of filmwebMovies) {
     //   await createMovie(movie);
@@ -25,11 +25,11 @@ const saveFilmwebData = async (city: string) => {
     //     await createScreening(screening);
     //   }
     // }
-    // const multikinoCinema = filmwebCinemas.filter(
-    //   (cinema) => cinema.name === "Multikino"
-    // );
+    const multikinoCinema = filmwebCinemas.find(
+      (cinema) => cinema.name === "Multikino"
+    );
 
-    await saveMultikinoData("Zabrze");
+    await saveMultikinoData(multikinoCinema);
 
     // console.log(
     //   `Data processed successfully (Filmweb) - added ${filmwebMovies.length} movies, ${filmwebCinemas.length} cinemas.`

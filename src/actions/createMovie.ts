@@ -5,19 +5,21 @@ export const createMovie = async (movie: Movie) => {
   try {
     const isMovieExist = await prisma.movie.findFirst({
       where: {
-        title: movie.title,
+        title: {
+          equals: movie.title,
+          mode: "insensitive",
+        },
         year: movie.year,
       },
     });
-
     if (isMovieExist) {
       return isMovieExist;
     }
-
     const createdMovie = await prisma.movie.create({
       data: {
         ...movie,
         screeningsHref: movie.screeningsHref || "N/A",
+        duration: Number(movie.duration), // Convert duration to number
         mainCast: {
           create: movie.mainCast.map((cast: string) => ({ name: cast })),
         },

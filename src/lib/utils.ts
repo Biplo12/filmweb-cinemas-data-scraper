@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
 import { JSDOM } from "jsdom";
 import { IS_PRODUCTION } from "../constants/env";
-// import axios from "axios";
+import { Cinema, CinemaGroup, Movie, Screening } from "../interfaces";
 
 export const fetchPageHtml = async (
   url: string,
@@ -46,19 +46,6 @@ export const fetchPageHtml = async (
   }
 };
 
-// export const fetchPageHtml = async (
-//   url: string,
-//   waitForSelector?: string
-// ): Promise<Document> => {
-//   try {
-//     const response = await axios.get(url);
-//     return convertHtmlToDocument(response.data);
-//   } catch (error) {
-//     console.error("Error fetching movies page:", error);
-//     throw error;
-//   }
-// };
-
 export const capitalizeFirstLetter = (str: string) => {
   if (!str) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -69,9 +56,9 @@ export const durationStringToNumber = (duration: string): number => {
   let totalMinutes = 0;
 
   parts.forEach((part) => {
-    if (part.endsWith("h")) {
+    if (part.endsWith("h") || part.endsWith("godz.")) {
       totalMinutes += parseInt(part) * 60;
-    } else if (part.endsWith("m")) {
+    } else if (part.endsWith("m") || part.endsWith("min.")) {
       totalMinutes += parseInt(part);
     }
   });
@@ -89,16 +76,25 @@ export const durationNumberToDurationString = (duration: number): string => {
 export const extractTextContentFromSelector = (
   selector: string,
   element: Element | Document,
-  attribute?: string
+  attribute?: string,
+  attributeToFind?: string
 ): string => {
   const selectedElement = element.querySelector(selector);
+
   if (!selectedElement) return "N/A";
 
   if (attribute) {
     return selectedElement.getAttribute(attribute) || "N/A";
   }
 
-  return selectedElement.textContent?.trim() || "N/A";
+  if (attributeToFind) {
+    const attributeValue = selectedElement.getAttribute(attributeToFind);
+    if (attributeValue) {
+      return selectedElement.textContent?.trim() || "N/A";
+    }
+  }
+
+  return selectedElement.textContent || "N/A";
 };
 
 export const convertHtmlToDocument = (html: string): Document => {
@@ -107,15 +103,81 @@ export const convertHtmlToDocument = (html: string): Document => {
 };
 
 export const convertElementsToArray = (
-  elements: NodeListOf<Element>
-): string[] => Array.from(elements).map((el) => el.textContent?.trim() || "");
+  elements: NodeListOf<Element> | HTMLCollectionOf<Element>
+): string[] => {
+  const elementsArray = Array.from(elements);
+  return elementsArray.map((el) => el.textContent?.trim() || "");
+};
 
 export const convertDateStringToDateObject = (
   dateString?: string,
   timeString?: string
 ): Date | undefined => {
   if (!dateString || !timeString) return undefined;
-  const [year, month, day] = dateString.split("-").map(Number);
-  const [hours, minutes] = timeString.split(":").map(Number);
-  return new Date(Date.UTC(year, month - 1, day, hours, minutes));
+  let [year, month, day] = dateString.split("-");
+  const [hours, minutes] = timeString.split(":");
+
+  if (day.toString().includes("T")) {
+    day = day.toString().split("T")[0];
+  }
+  const [yearNum, monthNum, dayNum] = [year, month, day].map(Number);
+  return new Date(
+    Date.UTC(yearNum, monthNum - 1, dayNum, Number(hours), Number(minutes))
+  );
 };
+
+export const createEmptyScreening = (): Screening => ({
+  movie: {
+    title: "",
+    year: 0,
+    duration: "",
+    durationInMinutes: 0,
+    imagePoster: "",
+    director: "",
+    description: "",
+    mainCast: [],
+    genres: [],
+    movieHref: "",
+  },
+  screening: {
+    date: new Date(),
+    time: "",
+    bookingHref: "",
+  },
+  cinema: {
+    name: "",
+    city: "",
+    latitude: 0,
+    longitude: 0,
+    screeningsHref: "",
+  },
+});
+
+export const createEmptyMovie = (): Movie => ({
+  title: "",
+  year: 0,
+  duration: "",
+  durationInMinutes: 0,
+  imagePoster: "",
+  director: "",
+  movieHref: "",
+  description: "",
+  screeningsHref: "",
+  mainCast: [],
+  genres: [],
+});
+
+export const createEmptyCinema = (): Cinema => ({
+  name: "",
+  city: "",
+  screeningsHref: "",
+  latitude: 0,
+  longitude: 0,
+});
+
+export const createEmptyCinemaGroup = (): CinemaGroup => ({
+  cinemas: [],
+  city: "",
+  latitude: 0,
+  longitude: 0,
+});
