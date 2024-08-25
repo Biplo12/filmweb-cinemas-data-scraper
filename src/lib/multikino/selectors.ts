@@ -2,6 +2,8 @@ import { Selector } from "../../interfaces";
 
 // Main wrapper selectors.
 export const MK_MOVIES_LIST_CARDS_SELECTOR = "li.showing-listing__item";
+export const MK_MOVIES_SCREENINGS_CONTAINER_SELECTOR =
+  "div.sessions__block.sessions__block_fdp";
 export const MK_SCREENINGS_LIST_SELECTOR =
   "div.sessions__block.sessions__block_fdp li.sessions__group-list__item";
 export const MK_SCREENINGS_ITEM_SELECTOR = "li.sessions__list__item";

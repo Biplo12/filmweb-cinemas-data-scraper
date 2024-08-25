@@ -15,7 +15,6 @@ const main = async () => {
   try {
     await connectDatabase();
     await saveFilmwebData(CITY);
-    // await saveFilmotekaData(CITY);
   } catch (error) {
     console.error("Error processing data:", error);
   }

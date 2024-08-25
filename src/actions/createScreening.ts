@@ -2,7 +2,6 @@ import { prisma } from "../prisma/prisma";
 import { Screening } from "../interfaces";
 import { createMovie } from "./createMovie";
 import { createCinema } from "./createCinema";
-import { Movie, Cinema } from "@prisma/client";
 
 export const createScreening = async (screening: Screening) => {
   try {
@@ -14,69 +13,69 @@ export const createScreening = async (screening: Screening) => {
     const isScreeningExist = await prisma.screening.findFirst({
       where: {
         date: screening.screening.date || "N/A",
-        time: screening.screening.time,
         bookingHref: screening.screening.bookingHref,
         cinema: {
           is: {
-            name: screening.cinema.name,
-            city: screening.cinema.city,
+            name: { equals: screening.cinema.name, mode: "insensitive" },
+            city: { equals: screening.cinema.city, mode: "insensitive" },
             latitude: screening.cinema.latitude,
             longitude: screening.cinema.longitude,
+          },
+        },
+        movie: {
+          is: {
+            title: { equals: screening.movie.title, mode: "insensitive" },
+            director: { equals: screening.movie.director, mode: "insensitive" },
+            year: screening.movie.year,
           },
         },
       },
     });
 
     if (isScreeningExist) {
-      return;
+      console.log(
+        `Screening already exists: ${screening.movie.title} (${screening.cinema.name})`
+      );
+
+      return isScreeningExist;
     }
 
     let movie = await prisma.movie.findFirst({
       where: {
-        title: screening.movie.title,
+        title: { equals: screening.movie.title, mode: "insensitive" },
+        director: { equals: screening.movie.director, mode: "insensitive" },
         year: screening.movie.year,
-        director: screening.movie.director,
       },
     });
 
     let cinema = await prisma.cinema.findFirst({
       where: {
-        name: screening.cinema.name,
-        city: screening.cinema.city,
+        name: { equals: screening.cinema.name, mode: "insensitive" },
+        city: { equals: screening.cinema.city, mode: "insensitive" },
         latitude: screening.cinema.latitude,
         longitude: screening.cinema.longitude,
       },
     });
 
     if (!movie) {
-      movie = (await createMovie({
-        title: screening.movie.title,
-        year: screening.movie.year,
-        duration: screening.movie.duration,
-        durationInMinutes: screening.movie.durationInMinutes,
-        imagePoster: screening.movie.imagePoster,
-        director: screening.movie.director,
-        movieHref: screening.movie.movieHref,
-        description: screening.movie.description,
-        mainCast: screening.movie.mainCast,
-        genres: screening.movie.genres,
-      })) as Movie;
+      const createdMovie = await createMovie(screening.movie);
+
+      if (createdMovie) {
+        movie = createdMovie;
+      }
     }
 
     if (!cinema) {
-      cinema = (await createCinema({
-        name: screening.cinema.name,
-        city: screening.cinema.city,
-        latitude: screening.cinema.latitude,
-        longitude: screening.cinema.longitude,
-        screeningsHref: screening.cinema.screeningsHref || "N/A",
-      })) as Cinema;
+      const createdCinema = await createCinema(screening.cinema);
+
+      if (createdCinema) {
+        cinema = createdCinema;
+      }
     }
 
-    await prisma.screening.create({
+    const createdScreening = await prisma.screening.create({
       data: {
         date: screening.screening.date || "N/A",
-        time: screening.screening.time,
         bookingHref: screening.screening.bookingHref,
         cinema: {
           connect: {
@@ -90,6 +89,8 @@ export const createScreening = async (screening: Screening) => {
         },
       },
     });
+
+    return createdScreening;
   } catch (err) {
     console.log(err);
   }

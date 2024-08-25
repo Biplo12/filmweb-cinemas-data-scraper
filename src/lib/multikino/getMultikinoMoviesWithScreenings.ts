@@ -13,6 +13,7 @@ import {
   MK_MOVIES_LIST_CARD_SELECTOR,
   MK_SCREENINGS_LIST_SELECTOR,
   MK_MOVIE_DETAILS_INFO_LIST_SELECTOR,
+  MK_MOVIES_SCREENINGS_CONTAINER_SELECTOR,
 } from "./selectors";
 
 // Function for getting movie details info without class name, based on the index of the elements.
@@ -34,7 +35,7 @@ const populateMovieDetailsInfo = (movieDetails: Document) => {
   Object.keys(movieDetailsInfoMap).forEach((key, index) => {
     const typedKey = key as keyof typeof movieDetailsInfoMap;
     const textContent = movieDetailsInfoArray[index]?.textContent ?? "N/A";
-    movieDetailsInfoMap[typedKey] = textContent;
+    movieDetailsInfoMap[typedKey] = textContent ?? "N/A";
   });
 
   return movieDetailsInfoMap;
@@ -46,7 +47,7 @@ const populateMoviesAndScreeningsDetails = async (
 ): Promise<{ movie: Movie; screenings: Screening[] }> => {
   const movieDetails = await fetchPageHtml(
     movie.movieHref,
-    MK_SCREENINGS_LIST_SELECTOR
+    MK_MOVIES_SCREENINGS_CONTAINER_SELECTOR
   );
 
   MK_MOVIE_DETAILS_SELECTORS.forEach(({ key, selector, attribute }) => {
@@ -67,15 +68,18 @@ const populateMoviesAndScreeningsDetails = async (
   const splitYear = movie.year.toString().split(" ");
   movie.year = Number(splitYear[splitYear.length - 1]);
 
-  const durationInMinutes = durationStringToNumber(movie.duration);
-  movie.durationInMinutes = durationInMinutes;
+  if (movie.duration && movie.duration !== "N/A") {
+    const durationInMinutes = durationStringToNumber(movie.duration);
+    movie.durationInMinutes = durationInMinutes;
+  }
 
   const mainCastArray = movie.mainCast.toString().split(", ");
   movie.mainCast = mainCastArray.map((actor: string) => actor.trim());
 
-  movie.screeningsHref = movie.movieHref;
-
   const screenings = await getMultikinoScreenings(movieDetails);
+
+  // delete duration from movie
+  delete movie.duration;
 
   screenings.forEach((screening) => {
     screening.movie = movie;
@@ -102,6 +106,7 @@ const populateMultikinoMovieBasicDetails = async (
   if (movie.movieHref) {
     const movieHrefTitle = movie.movieHref.split(`${MULTIKINO_BASE_URL}/`)[1];
     movie.movieHref = `${MULTIKINO_BASE_URL}/repertuar/${city}/${movieHrefTitle}`;
+
     movie.screeningsHref = movie.movieHref;
   }
 
@@ -122,7 +127,7 @@ const getMultikinoMoviesWithScreenings = async (
 ): Promise<{ movie: Movie; screenings: Screening[] }[]> => {
   const movieCards = document.querySelectorAll(MK_MOVIES_LIST_CARDS_SELECTOR);
 
-  const movieCardsArray = Array.from(movieCards).slice(0, 1);
+  const movieCardsArray = Array.from(movieCards);
 
   // Getting all movies from main repertoire page.
   const movieDetailsHrefs = await Promise.all(
@@ -133,7 +138,12 @@ const getMultikinoMoviesWithScreenings = async (
 
   // Getting all movies details from movie details page.
   const moviesAndScreeningsDetails = await Promise.all(
-    movieDetailsHrefs.map((movie) => populateMoviesAndScreeningsDetails(movie))
+    movieDetailsHrefs.map(async (movie) => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const movieDetails = await populateMoviesAndScreeningsDetails(movie);
+      return movieDetails;
+    })
   );
 
   return moviesAndScreeningsDetails;

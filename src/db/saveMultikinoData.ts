@@ -1,3 +1,5 @@
+import { createMovie } from "../actions/createMovie";
+import { createScreening } from "../actions/createScreening";
 import { MULTIKINO_BASE_URL } from "../constants";
 import { Cinema } from "../interfaces";
 import getMultikinoMoviesWithScreenings from "../lib/multikino/getMultikinoMoviesWithScreenings";
@@ -23,6 +25,23 @@ const saveMultikinoData = async (multikinoCinema: Cinema | undefined) => {
         screening.cinema = multikinoCinema;
       });
     });
+
+    await Promise.all(
+      moviesAndScreenings.map(async ({ movie, screenings }) => {
+        await createMovie(movie);
+
+        await Promise.all(
+          screenings.map(async (screening) => {
+            screening.movie = movie;
+            screening.cinema = multikinoCinema;
+
+            await createScreening(screening);
+          })
+        );
+      })
+    );
+
+    console.log("Data saved successfully");
   } catch (error) {
     console.error("Error processing data:", error);
   }

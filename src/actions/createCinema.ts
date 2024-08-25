@@ -5,8 +5,8 @@ export const createCinema = async (cinema: Cinema) => {
   try {
     const isCinemaExist = await prisma.cinema.findFirst({
       where: {
-        name: cinema.name,
-        city: cinema.city,
+        name: { equals: cinema.name, mode: "insensitive" },
+        city: { equals: cinema.city, mode: "insensitive" },
         screeningsHref: cinema.screeningsHref,
         latitude: cinema.latitude,
         longitude: cinema.longitude,
@@ -14,7 +14,9 @@ export const createCinema = async (cinema: Cinema) => {
     });
 
     if (isCinemaExist) {
-      return;
+      console.log(`Cinema already exists: ${cinema.name} (${cinema.city})`);
+
+      return isCinemaExist;
     }
 
     const createdCinema = await prisma.cinema.create({

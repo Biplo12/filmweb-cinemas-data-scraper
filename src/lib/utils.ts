@@ -26,7 +26,7 @@ export const fetchPageHtml = async (
     const page = await browser.newPage();
 
     // Navigate to the page
-    await page.goto(url, { waitUntil: "networkidle2" });
+    await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
 
     // Wait for a specific element to load (you can adjust the selector)
     if (waitForSelector) {

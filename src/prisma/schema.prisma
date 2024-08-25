@@ -27,11 +27,22 @@ model Genre {
   movie     Movie    @relation(fields: [movieId], references: [id])
 }
 
+model Cinema {
+  id        String   @id @default(uuid())
+  name      String
+  city      String
+  screeningsHref String
+  latitude  Float
+  longitude Float
+  screenings Screening[]
+  
+  @@unique([name, city, latitude, longitude])
+}
+
 model Movie {
   id        String   @id @default(uuid())
   title     String
   year      Int
-  duration  Int
   durationInMinutes Int
   imagePoster String
   director  String
@@ -42,6 +53,8 @@ model Movie {
   screenings Screening[]
   mainCast  MainCast[]
   genres    Genre[]
+  
+  @@unique([title, year, director])
 }
 
 model Screening {
@@ -52,14 +65,4 @@ model Screening {
   cinema    Cinema    @relation(fields: [cinemaId], references: [id])
   date      DateTime 
   bookingHref      String
-}
-
-model Cinema {
-  id        String   @id @default(uuid())
-  name      String
-  city      String
-  screeningsHref String
-  latitude  Float
-  longitude Float
-  screenings Screening[]
 }
