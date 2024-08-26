@@ -1,7 +1,13 @@
 import puppeteer from "puppeteer";
 import { JSDOM } from "jsdom";
 import { IS_PRODUCTION } from "../constants/env";
-import { Cinema, CinemaGroup, Movie, Screening } from "../interfaces";
+import {
+  Cinema,
+  CinemaGroup,
+  Movie,
+  Screening,
+  ScreeningDays,
+} from "../interfaces";
 import axios from "axios";
 
 export const fetchPageHtml = async (
@@ -147,7 +153,7 @@ export const createEmptyScreening = (): Screening => ({
     description: "",
     mainCast: [],
     genres: [],
-    movieHref: "",
+    screeningsHref: "",
   },
   screening: {
     date: new Date(),
@@ -170,7 +176,6 @@ export const createEmptyMovie = (): Movie => ({
   durationInMinutes: 0,
   imagePoster: "",
   director: "",
-  movieHref: "",
   description: "",
   screeningsHref: "",
   mainCast: [],
@@ -190,4 +195,9 @@ export const createEmptyCinemaGroup = (): CinemaGroup => ({
   city: "",
   latitude: 0,
   longitude: 0,
+});
+
+export const createEmptyScreeningDays = (): ScreeningDays => ({
+  date: new Date(),
+  screeningsHref: "",
 });

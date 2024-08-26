@@ -23,7 +23,6 @@ export interface Movie {
   description: string;
   mainCast: string[];
   genres: string[];
-  movieHref: string;
   screeningsHref?: string;
 }
 
@@ -52,4 +51,9 @@ export interface CinemaGroup {
   city: string;
   latitude: number;
   longitude: number;
+}
+
+export interface ScreeningDays {
+  date: Date | string;
+  screeningsHref: string;
 }

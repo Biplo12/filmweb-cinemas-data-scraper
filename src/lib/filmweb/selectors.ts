@@ -1,11 +1,11 @@
 import { Selector } from "../../interfaces";
 
+// --------------------------
+// MOVIE SELECTORS
+// --------------------------
+
 export const FW_MOVIE_CARD_SELECTOR =
   "div.showtimesFilmsListSection__film.ShowtimesFilmsItem.showtimesFilmsItem";
-
-export const FW_CINEMA_CARD_SELECTOR = "li.showtimesCinemasList__item";
-
-export const FW_CINEMA_GROUP_SELECTOR = "li.showtimesCinemasList__group";
 
 export const FW_MOVIE_GENRES_SELECTOR = "div.preview__genresInHeader h3";
 export const FW_MOVIE_MAIN_CAST_SELECTOR = "div.preview__detail--cast h3";
@@ -19,6 +19,13 @@ export const FW_MOVIE_SELECTORS: Selector[] = [
   { key: "description", selector: "div.preview__plotText" },
   { key: "screeningsHref", selector: "a.preview__link", attribute: "href" },
 ];
+
+// --------------------------
+// CINEMA SELECTORS
+// --------------------------
+
+export const FW_CINEMA_CARD_SELECTOR = "li.showtimesCinemasList__item";
+export const FW_CINEMA_GROUP_SELECTOR = "li.showtimesCinemasList__group";
 
 export const FW_CINEMA_GROUP_SELECTORS: Selector[] = [
   { key: "city", selector: "h3.showtimesCinemasList__groupHeader" },
@@ -43,6 +50,10 @@ export const FW_CINEMA_SELECTORS: Selector[] = [
   },
 ];
 
+// --------------------------
+// SCREENING SELECTORS
+// --------------------------
+
 export const FW_SCREENING_SELECTORS: Selector[] = [
   { key: "movie.title", selector: "a.preview__link" },
   { key: "movie.year", selector: "div.preview__year" },
@@ -53,10 +64,8 @@ export const FW_SCREENING_SELECTORS: Selector[] = [
     selector: "div.preview__detail--director h3 a span",
   },
   { key: "movie.description", selector: "div.preview__plotText" },
-  { key: "movie.production", selector: "div.preview__detail--country h3 span" },
   { key: "movie.mainCast", selector: "div.preview__detail--cast h3 a span" },
   { key: "movie.genres", selector: "div.preview__detail--genre a span" },
-  { key: "movie.href", selector: "a.preview__link", attribute: "href" },
   {
     key: "screening.date",
     selector: "div.seanceTile.SeanceTile",
@@ -73,3 +82,20 @@ export const FW_SCREENING_SELECTORS: Selector[] = [
     attribute: "href",
   },
 ];
+
+// --------------------------
+// SCREENINGS DAYS SELECTORS
+// --------------------------
+
+export const FW_SCREENINGS_DAYS_SELECTOR_ITEM = "li.navList__item";
+export const FW_SCREENINGS_DAYS_SELECTOR_DISABLED = "navList__item--disabled";
+
+export const FW_SCREENINGS_DAYS_SELECTOR: Selector = {
+  key: "screeningsHref",
+  selector: "a.navList__button",
+  attribute: "href",
+};
+
+// --------------------------
+//
+// --------------------------

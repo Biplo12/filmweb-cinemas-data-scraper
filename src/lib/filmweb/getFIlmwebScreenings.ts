@@ -1,4 +1,3 @@
-import { FILMWEB_BASE_URL } from "../../constants";
 import { Cinema, Screening } from "../../interfaces";
 import {
   convertDateStringToDateObject,
@@ -8,6 +7,7 @@ import {
   extractTextContentFromSelector,
   fetchPageHtmlRequest,
 } from "../utils";
+import getFilmwebScreeningsDays from "./getFilmwebScreeningsDates";
 import {
   FW_MOVIE_GENRES_SELECTOR,
   FW_MOVIE_MAIN_CAST_SELECTOR,
@@ -34,12 +34,6 @@ const populateScreeningData = (card: Element, cinema: Cinema): Screening => {
   screening.movie.genres = convertElementsToArray(
     card.querySelectorAll(FW_MOVIE_GENRES_SELECTOR)
   );
-
-  if (screening.movie.movieHref !== "N/A") {
-    const splittedHref = screening.movie.movieHref.split("/showtimes")[0];
-
-    screening.movie.movieHref = `${FILMWEB_BASE_URL}${splittedHref}`;
-  }
 
   if (screening.movie.duration) {
     screening.movie.durationInMinutes = durationStringToNumber(
@@ -70,16 +64,42 @@ const populateScreeningData = (card: Element, cinema: Cinema): Screening => {
  * @returns Promise<Screening[]> - Array of screenings.
  */
 const getFilmwebScreenings = async (cinema: Cinema): Promise<Screening[]> => {
-  const document = await fetchPageHtmlRequest(cinema.screeningsHref);
-
-  const moviesCards = document.querySelectorAll(FW_MOVIE_CARD_SELECTOR);
-  const moviesCardsArray = Array.from(moviesCards);
-
-  const screenings = await Promise.all(
-    moviesCardsArray.map((card) => populateScreeningData(card, cinema))
+  const cinemaScreeningDocument = await fetchPageHtmlRequest(
+    cinema.screeningsHref
   );
 
-  return screenings;
+  const screeningsDays = await getFilmwebScreeningsDays(
+    cinemaScreeningDocument
+  );
+
+  const screenings = await Promise.all(
+    screeningsDays.map(async (screeningDay) => {
+      const movieDocument = await fetchPageHtmlRequest(
+        screeningDay.screeningsHref
+      );
+
+      const moviesCards = movieDocument.querySelectorAll(
+        FW_MOVIE_CARD_SELECTOR
+      );
+      const moviesCardsArray = Array.from(moviesCards);
+
+      const screenings = await Promise.all(
+        moviesCardsArray.map((card) => populateScreeningData(card, cinema))
+      );
+
+      return screenings;
+    })
+  );
+
+  const filteredScreenings = screenings
+    .flat()
+    .filter(
+      (screening) =>
+        screening.screening.date instanceof Date &&
+        !isNaN(screening.screening.date.getTime())
+    );
+
+  return filteredScreenings;
 };
 
 export default getFilmwebScreenings;

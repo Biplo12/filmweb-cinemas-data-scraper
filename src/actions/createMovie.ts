@@ -14,7 +14,7 @@ export const createMovie = async (movie: MovieWithoutDuration) => {
     });
 
     if (isMovieExist) {
-      // console.log(`Movie already exists: ${movie.title} (${movie.year})`);
+      console.log(`Movie already exists: ${movie.title} (${movie.year})`);
 
       return isMovieExist;
     }
@@ -32,6 +32,7 @@ export const createMovie = async (movie: MovieWithoutDuration) => {
       },
     });
 
+    // console.log(`Movie created: ${createdMovie.id}`);
     return createdMovie;
   } catch (err) {
     console.log(err);

@@ -3,6 +3,7 @@ import {
   createEmptyMovie,
   durationStringToNumber,
   extractTextContentFromSelector,
+  fetchPageHtmlRequest,
 } from "../utils";
 import { Movie } from "../../interfaces";
 import { FILMWEB_BASE_URL } from "../../constants";
@@ -29,7 +30,6 @@ const populateMovieData = (card: Element): Movie => {
 
   if (movie.screeningsHref !== "N/A") {
     movie.screeningsHref = `${FILMWEB_BASE_URL}/${movie.screeningsHref}`;
-    movie.movieHref = movie.screeningsHref.split("/showtimes")[0];
   }
 
   movie.genres = convertElementsToArray(
@@ -56,10 +56,7 @@ const populateMovieData = (card: Element): Movie => {
  *
  * @returns Promise<Movie[]> - Returned movies.
  */
-const getFilmwebMovies = async (
-  city: string,
-  document: Document
-): Promise<Movie[]> => {
+const getFilmwebMovies = async (document: Document): Promise<Movie[]> => {
   const movieCards = document.querySelectorAll(FW_MOVIE_CARD_SELECTOR);
 
   const moviesArray = Array.from(movieCards);
@@ -68,7 +65,6 @@ const getFilmwebMovies = async (
     moviesArray.map((card) => populateMovieData(card))
   );
 
-  console.log(`Finished fetching movies and cinemas for ${city}.`);
   return movies;
 };
 

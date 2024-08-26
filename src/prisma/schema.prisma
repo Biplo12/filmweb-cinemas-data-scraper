@@ -47,14 +47,10 @@ model Movie {
   imagePoster String
   director  String
   description String
-  screeningsHref String?
-  movieHref String
-  
+  screeningsHref String?  
   screenings Screening[]
   mainCast  MainCast[]
-  genres    Genre[]
-  
-  @@unique([title, year, director])
+  genres    Genre[]  
 }
 
 model Screening {

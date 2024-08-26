@@ -23,6 +23,7 @@ export const createCinema = async (cinema: Cinema) => {
       data: cinema,
     });
 
+    // console.log(`Cinema created: ${createdCinema.id}`);
     return createdCinema;
   } catch (err) {
     console.log(err);
