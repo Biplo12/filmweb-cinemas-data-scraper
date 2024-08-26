@@ -1,11 +1,14 @@
 import { Selector } from "../../interfaces";
 
 export const FW_MOVIE_CARD_SELECTOR =
-  "div.showtimesFilmsItem__filmPreview.previewHolder.isSmall.smMicro.isBold.showGenresInHeader.showDuration.noPadding.noYear.variantPlot.variantAdditionalInfo";
+  "div.showtimesFilmsListSection__film.ShowtimesFilmsItem.showtimesFilmsItem";
 
 export const FW_CINEMA_CARD_SELECTOR = "li.showtimesCinemasList__item";
 
 export const FW_CINEMA_GROUP_SELECTOR = "li.showtimesCinemasList__group";
+
+export const FW_MOVIE_GENRES_SELECTOR = "div.preview__genresInHeader h3";
+export const FW_MOVIE_MAIN_CAST_SELECTOR = "div.preview__detail--cast h3";
 
 export const FW_MOVIE_SELECTORS: Selector[] = [
   { key: "title", selector: "a.preview__link" },
@@ -39,9 +42,6 @@ export const FW_CINEMA_SELECTORS: Selector[] = [
     attribute: "href",
   },
 ];
-
-export const FW_SCREENING_CARD_SELECTOR =
-  "div.showtimesFilmsListSection__film.ShowtimesFilmsItem.showtimesFilmsItem";
 
 export const FW_SCREENING_SELECTORS: Selector[] = [
   { key: "movie.title", selector: "a.preview__link" },

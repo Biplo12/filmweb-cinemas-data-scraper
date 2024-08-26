@@ -1,29 +1,39 @@
 import { createCinema } from "../actions/createCinema";
 import { createMovie } from "../actions/createMovie";
-import { createScreening } from "../actions/createScreening";
-import getFilmwebMoviesAndCinemas from "../lib/filmweb/getFilmwebMoviesAndCinemas";
 import getFilmwebScreenings from "../lib/filmweb/getFIlmwebScreenings";
-// import saveMultikinoData from "./saveMultikinoData";
+import { createScreening } from "../actions/createScreening";
+import { fetchPageHtmlRequest } from "../lib/utils";
+import { FILMWEB_BASE_URL } from "../constants";
+import getFilmwebMovies from "../lib/filmweb/getFilmwebMovies";
+import getFilmwebCinemas from "../lib/filmweb/getFilmwebCinemas";
 
-const saveFilmwebData = async (city: string) => {
+const saveFilmwebData = async (city: string): Promise<void> => {
   try {
-    const { movies: filmwebMovies, cinemas: filmwebCinemas } =
-      await getFilmwebMoviesAndCinemas(city);
+    const FILMWEB_CITY_CINEMAS_URL = `${FILMWEB_BASE_URL}/showtimes/${city}`;
+    const document = await fetchPageHtmlRequest(FILMWEB_CITY_CINEMAS_URL);
+
+    console.log(
+      `Starting to fetch movies and cinemas for ${city}. URL: ${FILMWEB_CITY_CINEMAS_URL}`
+    );
+
+    const movies = await getFilmwebMovies(city, document);
+    const cinemas = await getFilmwebCinemas(document);
 
     await Promise.all(
-      filmwebMovies.map(async (movie) => {
+      movies.map(async (movie) => {
         await createMovie(movie);
       })
     );
 
     await Promise.all(
-      filmwebCinemas.map(async (cinema) => {
+      cinemas.map(async (cinema) => {
         await createCinema(cinema);
       })
     );
 
     await Promise.all(
-      filmwebCinemas.map(async (cinema) => {
+      cinemas.map(async (cinema) => {
+        console.log(`Starting to fetch screenings for ${cinema.name}.`);
         const screenings = await getFilmwebScreenings(cinema);
 
         return Promise.all(
@@ -34,15 +44,7 @@ const saveFilmwebData = async (city: string) => {
       })
     );
 
-    // const multikinoCinemas = filmwebCinemas.filter(
-    //   (cinema) => cinema.name === "Multikino"
-    // );
-
-    // await Promise.all(
-    //   multikinoCinemas.map(async (cinema) => {
-    //     await saveMultikinoData(cinema);
-    //   })
-    // );
+    console.log("All cinemas processed successfully.");
   } catch (error) {
     console.error("Error processing data:", error);
   }

@@ -14,7 +14,7 @@ export const createMovie = async (movie: MovieWithoutDuration) => {
     });
 
     if (isMovieExist) {
-      console.log(`Movie already exists: ${movie.title} (${movie.year})`);
+      // console.log(`Movie already exists: ${movie.title} (${movie.year})`);
 
       return isMovieExist;
     }

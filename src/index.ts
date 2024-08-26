@@ -1,8 +1,5 @@
 import dotenv from "dotenv";
 import connectDatabase from "./prisma/prisma";
-// import saveFilmwebData from "./db/saveFilmwebData";
-// import saveFilmotekaData from "./db/saveFilmotekaData";
-import saveMultikinoData from "./db/saveMultikinoData";
 import saveFilmwebData from "./db/saveFilmwebData";
 import fs from "fs";
 

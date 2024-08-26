@@ -2,6 +2,7 @@ import puppeteer from "puppeteer";
 import { JSDOM } from "jsdom";
 import { IS_PRODUCTION } from "../constants/env";
 import { Cinema, CinemaGroup, Movie, Screening } from "../interfaces";
+import axios from "axios";
 
 export const fetchPageHtml = async (
   url: string,
@@ -26,7 +27,7 @@ export const fetchPageHtml = async (
     const page = await browser.newPage();
 
     // Navigate to the page
-    await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
+    await page.goto(url, { waitUntil: "networkidle2" });
 
     // Wait for a specific element to load (you can adjust the selector)
     if (waitForSelector) {
@@ -44,6 +45,13 @@ export const fetchPageHtml = async (
     console.error("Error fetching movies page:", error);
     throw error;
   }
+};
+
+export const fetchPageHtmlRequest = async (url: string): Promise<Document> => {
+  const response = await axios.get(url);
+  const html = response.data;
+
+  return convertHtmlToDocument(html);
 };
 
 export const capitalizeFirstLetter = (str: string) => {
@@ -114,12 +122,14 @@ export const convertDateStringToDateObject = (
   timeString?: string
 ): Date | undefined => {
   if (!dateString || !timeString) return undefined;
+
   let [year, month, day] = dateString.split("-");
   const [hours, minutes] = timeString.split(":");
 
-  if (day.toString().includes("T")) {
+  if (day?.toString()?.includes("T")) {
     day = day.toString().split("T")[0];
   }
+
   const [yearNum, monthNum, dayNum] = [year, month, day].map(Number);
   return new Date(
     Date.UTC(yearNum, monthNum - 1, dayNum, Number(hours), Number(minutes))

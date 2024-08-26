@@ -33,9 +33,9 @@ export const createScreening = async (screening: Screening) => {
     });
 
     if (isScreeningExist) {
-      console.log(
-        `Screening already exists: ${screening.movie.title} (${screening.cinema.name})`
-      );
+      // console.log(
+      //   `Screening already exists: ${screening.movie.title} (${screening.cinema.name})`
+      // );
 
       return isScreeningExist;
     }
@@ -92,6 +92,6 @@ export const createScreening = async (screening: Screening) => {
 
     return createdScreening;
   } catch (err) {
-    console.log(err);
+    // console.log(err);
   }
 };
