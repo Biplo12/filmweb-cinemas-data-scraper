@@ -5,11 +5,6 @@ import { createCinema } from "./createCinemas";
 
 export const createScreening = async (screening: Screening) => {
   try {
-    if (!screening.cinema.name || !screening.cinema.city) {
-      console.log("Cinema data is missing");
-      return;
-    }
-
     const isScreeningExist = await prisma.screening.findFirst({
       where: {
         date: screening.screening.date || "N/A",

@@ -1,9 +1,9 @@
 import { createCinema } from "../actions/createCinemas";
-import getFilmwebScreenings from "../lib/filmweb/getFIlmwebScreenings";
 import { createScreening } from "../actions/createScreening";
 import { fetchPageHtmlRequest } from "../lib/utils";
 import { FILMWEB_BASE_URL } from "../constants";
 import getFilmwebCinemas from "../lib/filmweb/getFilmwebCinemas";
+import getFIlmwebMoviesWithScreenings from "../lib/filmweb/getFIlmwebMoviesWithScreenings";
 
 const saveFilmwebData = async (city: string): Promise<void> => {
   try {
@@ -17,7 +17,7 @@ const saveFilmwebData = async (city: string): Promise<void> => {
     }
 
     for (const cinema of cinemas) {
-      const screenings = await getFilmwebScreenings(cinema);
+      const screenings = await getFIlmwebMoviesWithScreenings(cinema);
       for (const screening of screenings) {
         await createScreening(screening);
       }
