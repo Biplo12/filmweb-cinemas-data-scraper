@@ -14,7 +14,7 @@ export const createCinema = async (cinema: Cinema) => {
     });
 
     if (isCinemaExist) {
-      // console.log(`Cinema already exists: ${cinema.name} (${cinema.city})`);
+      console.log(`Cinema already exists: ${cinema.name} (${cinema.city})`);
 
       return isCinemaExist;
     }
@@ -23,7 +23,7 @@ export const createCinema = async (cinema: Cinema) => {
       data: cinema,
     });
 
-    // console.log(`Cinema created: ${createdCinema.id}`);
+    console.log(`Cinema created: ${createdCinema.id}`);
     return createdCinema;
   } catch (err) {
     console.log(err);

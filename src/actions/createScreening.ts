@@ -1,7 +1,7 @@
 import { prisma } from "../prisma/prisma";
 import { Screening } from "../interfaces";
 import { createMovie } from "./createMovie";
-import { createCinema } from "./createCinemas";
+import { createCinema } from "./createCinema";
 
 export const createScreening = async (screening: Screening) => {
   try {
@@ -30,7 +30,11 @@ export const createScreening = async (screening: Screening) => {
 
     if (isScreeningExist) {
       console.log(
-        `Screening already exists: ${screening.movie.title} (${screening.cinema.name})`
+        `Screening already exists: ${screening.movie.title} (${
+          screening.cinema.name
+        } [${
+          screening.cinema.city
+        }]) - ${screening.screening.date?.toLocaleString()}`
       );
 
       return isScreeningExist;

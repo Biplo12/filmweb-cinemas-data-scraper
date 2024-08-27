@@ -1,4 +1,4 @@
-import { createCinema } from "../actions/createCinemas";
+import { createCinema } from "../actions/createCinema";
 import { createScreening } from "../actions/createScreening";
 import { fetchPageHtmlRequest } from "../lib/utils";
 import { FILMWEB_BASE_URL } from "../constants";

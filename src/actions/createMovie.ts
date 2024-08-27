@@ -32,7 +32,7 @@ export const createMovie = async (movie: MovieWithoutDuration) => {
       },
     });
 
-    // console.log(`Movie created: ${createdMovie.id}`);
+    console.log(`Movie created: ${createdMovie.id}`);
     return createdMovie;
   } catch (err) {
     console.log(err);

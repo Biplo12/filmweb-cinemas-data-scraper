@@ -9,7 +9,7 @@ export const FW_CINEMA_GROUP_SELECTOR = "li.showtimesCinemasList__group";
 
 export const FW_CINEMA_GROUP_CITY_SELECTOR: Selector = {
   key: "city",
-  selector: "",
+  selector: "h3.showtimesCinemasList__groupHeader",
 };
 
 export const FW_CINEMA_SELECTORS: Selector[] = [
